@@ -19,12 +19,15 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
           IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
         ],
+        backgroundColor: Colors.red.shade100,
+        elevation: 1,
       ),
 
-      //floating button to add new user
+      //floating button to scan Qr
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: FloatingActionButton(
+          backgroundColor: Colors.red.shade200,
           onPressed: () {},
           child: Icon(Icons.qr_code_scanner_rounded),
         ),

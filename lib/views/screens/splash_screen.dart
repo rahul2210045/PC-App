@@ -1,10 +1,10 @@
-// import 'package:flutter/cupertino.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pc_app/main.dart';
-import 'package:pc_app/views/screens/landing_screen/landing_page.dart';
+import 'package:pc_app/views/screens/auth/login_screen.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -33,6 +33,8 @@ class _SplashScreenState extends State<SplashScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text("Welcome To Programming Club"),
+        backgroundColor: Colors.red.shade100,
+        elevation: 1,
       ),
       body: Stack(
         children: [
