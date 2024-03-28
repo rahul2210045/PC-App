@@ -73,6 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
         print('Failed: $message');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            backgroundColor: Colors.red.shade400,
             content: Text(message),
             duration: const Duration(seconds: 3),
           ),
@@ -148,7 +149,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: HexColor("#EBEBF9")),
+                          // borderSide: BorderSide(color: HexColor("#EBEBF9")),
+                          borderSide: BorderSide(color: Colors.red.shade100),
                         ),
                       ),
                     ),

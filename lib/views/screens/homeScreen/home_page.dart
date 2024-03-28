@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pc_app/views/screens/qrScaning.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,7 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.only(bottom: 10),
         child: FloatingActionButton(
           backgroundColor: Colors.red.shade200,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (_) => const QrViewExample()));
+          },
           child: Icon(Icons.qr_code_scanner_rounded),
         ),
       ),
