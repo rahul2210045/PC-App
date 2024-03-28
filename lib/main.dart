@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pc_app/views/screens/landing_screen/landing_page.dart';
+import 'package:pc_app/views/screens/splash_screen.dart';
 
 late Size mq;
 void main() {
@@ -22,10 +23,7 @@ class MyApp extends StatelessWidget {
             color: Colors.black, fontSize: 19, fontWeight: FontWeight.normal),
         backgroundColor: Colors.white,
       )),
-
-      home: LoginScreen(),
+      home: SplashScreen(),
     );
   }
 }
-
-

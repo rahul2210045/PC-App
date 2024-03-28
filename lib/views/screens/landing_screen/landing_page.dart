@@ -1,11 +1,9 @@
-
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pc_app/main.dart';
 import 'package:pc_app/views/screens/homeScreen/home_page.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -57,16 +55,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       MaterialPageRoute(builder: (_) => const HomeScreen()));
                 },
                 icon: Image.asset(
-                  'assets/icons/google.png',
+                  'assets/icons/profile.png',
                   height: mq.height * .03,
                 ),
                 label: RichText(
                     text: TextSpan(
                         style: TextStyle(color: Colors.black, fontSize: 16),
                         children: [
-                      TextSpan(text: 'Sign In with '),
+                      TextSpan(text: 'Sign In only '),
                       TextSpan(
-                          text: 'Google',
+                          text: 'PC Members',
                           style: TextStyle(fontWeight: FontWeight.w500))
                     ])),
               )),
