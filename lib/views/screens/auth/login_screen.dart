@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool obsVal = true;
   bool _isLoading = false;
 
+// ........function to intigrate login api .....................
   Future<void> _saveItem() async {
     setState(() {
       _isLoading = true;
@@ -57,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
         PreferencesManager().refreshToken = refreshToken!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            backgroundColor: Colors.green.shade500,
             content: Text("#PC Member"),
             duration: const Duration(seconds: 3),
           ),
@@ -114,11 +116,11 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: mq.height * 0.08,
+                height: mq.height * 0.06,
               ),
               Image.asset(
-                "assets/icons/chat.png",
-                scale: 4,
+                "assets/icons/pc_icon.png",
+                scale: 2,
               ),
               Container(
                 child: Column(
@@ -126,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: mq.height * 0.15,
+                      height: mq.height * 0.06,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(5.0),
@@ -234,8 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Colors.black.withOpacity(0.5),
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(Color(0xFF4E82EA)),
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
                       strokeWidth: 5.0,
                     ),
                   ),

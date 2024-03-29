@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:pc_app/main.dart';
 import 'package:pc_app/views/screens/auth/login_screen.dart';
 
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -42,7 +41,10 @@ class _SplashScreenState extends State<SplashScreen> {
               top: mq.height * 0.15,
               right: mq.width * 0.25,
               width: mq.width * .5,
-              child: Image.asset("assets/icons/chat.png")),
+              child: Image.asset(
+                "assets/icons/pc_icon.png",
+                scale: 2,
+              )),
           Positioned(
               bottom: mq.height * .15,
               height: mq.height * 0.06,

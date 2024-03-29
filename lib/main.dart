@@ -63,6 +63,4 @@ class PreferencesManager {
   set token(String value) => _prefs.setString('token', value);
   String get refreshToken => _prefs.getString('refreshToken') ?? '';
   set refreshToken(String value) => _prefs.setString('refreshToken', value);
-
-  // add more methods as needed
 }
