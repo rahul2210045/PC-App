@@ -111,10 +111,115 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       if (qrResult.isNotEmpty) {
         showSuccessSnackbar('QR code scanned successfully ');
+        print(qrResult);
       }
     } on PlatformException {
-      // qrResult = 'Fail to read Qr Code';
       showErrorSnackbar('Failed to read QR code');
+    }
+  }
+
+//   ...................... calling function for QR Fetch Api...................
+
+  Future<String> fetchQrData() async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': '${PreferencesManager().token}',
+    };
+    var request =
+        http.Request('GET', Uri.parse('https://pc.anaskhan.site/api/fetch_qr'));
+    request.body = jsonEncode({'qr_data': '$qrResult'});
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      String responseBody = await response.stream.bytesToString();
+
+      return responseBody;
+      // return await response.stream.bytesToString();
+    } else if (response.statusCode == 400) {
+      //     // Handle error code 400 separately
+      getAccessToken();
+      return 'Bad request: ${response.reasonPhrase}';
+    } else {
+      throw Exception('Failed to get access token: ${response.reasonPhrase}');
+    }
+  }
+
+  void _fetchAndPrintQrData() async {
+    try {
+      String responseData = await fetchQrData();
+      print(responseData);
+
+//...........decode fetch data from API.........................
+      Map<String, dynamic> jsonResponse = json.decode(responseData);
+      String studentId = jsonResponse['student_id'];
+      String studentName = jsonResponse['student_name'];
+      bool isPaid = jsonResponse['isPaid'];
+      bool isContestOnly = jsonResponse['isContestOnly'];
+      bool day1Attendance = jsonResponse['day1_attendance'];
+      bool day2Attendance = jsonResponse['day2_attendance'];
+      bool contestAttendance = jsonResponse['contest_attendance'];
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return MyBottomSheet(
+            studentId: studentId,
+            studentName: studentName,
+            isPaid: isPaid,
+            isContestOnly: isContestOnly,
+            day1Attendance: day1Attendance,
+            day2Attendance: day2Attendance,
+            contestAttendance: contestAttendance,
+          );
+        },
+      );
+
+//...............BottomSheet function......................................
+    } catch (e) {
+      if (e is http.Response) {
+        // Access response body
+        String responseBody = e.body;
+
+        // Decode response body as JSON
+        try {
+          Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+          print('Error response JSON: $jsonResponse');
+        } catch (error) {
+          print('Error decoding JSON: $error');
+        }
+      } else {
+        // Handle other types of errors
+        print('Error: $e');
+      }
+    }
+  }
+
+  //.................  function to call an Api ...........................
+
+  Future<String> getAccessToken() async {
+    var headers = {'Content-Type': 'application/json'};
+    var request = http.Request(
+        'GET', Uri.parse('https://pc.anaskhan.site/api/get_access_token'));
+    request.body =
+        jsonEncode({'refresh_token': '${PreferencesManager().refreshToken}'});
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      // Get the response body
+      String responseBody = await response.stream.bytesToString();
+      // Print the status code and response body
+      Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+      PreferencesManager().token = jsonResponse['access_token'];
+      print(' New Access Token: ${PreferencesManager().token}');
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: $responseBody');
+      return responseBody;
+      // return await response.stream.bytesToString();
+    } else {
+      throw Exception('Failed to get access token: ${response.reasonPhrase}');
     }
   }
 
@@ -256,6 +361,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     : _showSnackbarFunction,
                 // function: _markAttendance,
               ),
+              SizedBox(
+                height: mq.height * 0.02,
+              ),
+              CustomButton(
+                text: "Participant Details",
+                color: Colors.red.shade200,
+                textColor: Colors.black,
+                function: _fetchAndPrintQrData,
+
+                // function: _markAttendance,
+              ),
               if (_isLoading)
                 Container(
                   color: Colors.black.withOpacity(0.5),
@@ -293,6 +409,135 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+//////////////////////all set till now ..............................
+/////..................now next step ................................
+///
+///
+///
 
-//////////////rahul save here all //////////////////////
-//////////////////////done bro////////////////////////
+class MyBottomSheet extends StatelessWidget {
+  final String studentId;
+  final String studentName;
+  final bool isPaid;
+  final bool isContestOnly;
+  final bool day1Attendance;
+  final bool day2Attendance;
+  final bool contestAttendance;
+
+  const MyBottomSheet({
+    required this.studentId,
+    required this.studentName,
+    required this.isPaid,
+    required this.isContestOnly,
+    required this.day1Attendance,
+    required this.day2Attendance,
+    required this.contestAttendance,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: mq.height * 0.6,
+      decoration: BoxDecoration(
+        color: Colors.red.shade100,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(22.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Participent Details",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: mq.height * 0.045),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Student Id : ${studentId}',
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: mq.height * 0.01),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Student name : ${studentName}',
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: mq.height * 0.01),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Payment Status : ${isPaid}',
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: mq.height * 0.01),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'WorkShop Attendance: ${day1Attendance}  ${day2Attendance}',
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: mq.height * 0.01),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Contest Attendance : ${contestAttendance}',
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: mq.height * 0.01),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Only Contest Attendance: ${isContestOnly}',
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
