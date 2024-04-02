@@ -17,6 +17,8 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import '../../../models/student_details_model.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -25,6 +27,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late StudentData studentData;
   int _selectedCheckboxIndex = -1;
   bool _isLoading = false;
   String qrResult = '';
@@ -101,22 +104,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   //...............QR Scanning intigration......................................
-  Future<void> scanQR() async {
-    try {
-      final qrCode = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Cancel', true, ScanMode.QR);
-      if (!mounted) return;
-      setState(() {
-        this.qrResult = qrCode.toString();
-      });
-      if (qrResult.isNotEmpty) {
-        showSuccessSnackbar('QR code scanned successfully ');
-        print(qrResult);
-      }
-    } on PlatformException {
-      showErrorSnackbar('Failed to read QR code');
-    }
-  }
+  // Future<void> scanQR() async {
+  //   try {
+  //     final qrCode = await FlutterBarcodeScanner.scanBarcode(
+  //         '#ff6666', 'Cancel', true, ScanMode.QR);
+  //     if (!mounted) return;
+  //     setState(() {
+  //       this.qrResult = qrCode.toString();
+  //     });
+  //     if (qrResult.isNotEmpty) {
+  //       fetchAndParseQrData();
+  //       showSuccessSnackbar('QR code scanned successfully ');
+  //       print(qrResult);
+  //     }
+  //   } on PlatformException {
+  //     showErrorSnackbar('Failed to read QR code');
+  //   }
+  // }
 
 //   ...................... calling function for QR Fetch Api...................
 
@@ -192,6 +196,47 @@ class _HomeScreenState extends State<HomeScreen> {
         // Handle other types of errors
         print('Error: $e');
       }
+    }
+  }
+
+  Future<StudentData> fetchAndParseQrData() async {
+    try {
+      String responseData = await fetchQrData();
+      print(responseData);
+
+      // Decode fetch data from API
+      Map<String, dynamic> jsonResponse = json.decode(responseData);
+      studentData = StudentData.fromJson(jsonResponse);
+      print(studentData);
+      return studentData;
+
+    } catch (e) {
+      print('Error: $e');
+      // Handle errors by returning null or throwing an exception
+      throw e;
+    }
+  }
+
+  Future<void> scanQR() async {
+    try {
+      final qrCode = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+      if (!mounted) return;
+      setState(() {
+        this.qrResult = qrCode.toString();
+      });
+      if (qrResult.isNotEmpty) {
+        print("----------------------------------------------------------------------------------------------");
+        await fetchAndParseQrData();
+        print("----------------------------------------------------------------------------------------------");
+        showSuccessSnackbar('QR code scanned successfully ');
+        setState(() {
+
+        });
+        print(qrResult);
+      }
+    } on PlatformException {
+      showErrorSnackbar('Failed to read QR code');
     }
   }
 
@@ -275,8 +320,9 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(
                 height: mq.height * 0.06,
               ),
-              LabeledCheckbox(
-                label: 'Registration Payment',
+              (studentData.isPaid == true) ? Text("Payment Status:     Paid", style: TextStyle(fontSize: 20),)
+              : LabeledCheckbox(
+                label: 'Payment Status',
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
                 value: _selectedCheckboxIndex == 0,
@@ -295,8 +341,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
               ),
-              LabeledCheckbox(
-                label: 'Workshop Attendance D1',
+              (studentData.day1Attendance == true)? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text("Day1 Attendance:", style: TextStyle(fontSize: 20),),
+                  Text("Present", style: TextStyle(fontSize: 20),),
+                ],
+              )
+              :LabeledCheckbox(
+                label: 'Day1 Attendance',
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
                 // value: _isSelected2,
@@ -313,8 +366,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
               ),
-              LabeledCheckbox(
-                label: 'WorkShop Attendance D2',
+              (studentData.day2Attendance == true)? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text("Day2 Attendance:", style: TextStyle(fontSize: 20),),
+                  Text("Present", style: TextStyle(fontSize: 20),),
+                ],
+              )
+              :LabeledCheckbox(
+                label: 'Day2 Attendance',
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
                 // value: _isSelected3,
@@ -331,7 +391,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
               ),
-              LabeledCheckbox(
+              (studentData.contestAttendance == true)? Text("Contest Attendance:   Present", style: TextStyle(fontSize: 20),)
+              :LabeledCheckbox(
                 label: 'Contest Attendance',
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
@@ -364,6 +425,14 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(
                 height: mq.height * 0.02,
               ),
+              // CustomButton(
+              //   text: "Participant Details",
+              //   color: Colors.red.shade200,
+              //   textColor: Colors.black,
+              //   // function: _fetchAndPrintQrData,
+              //   function: fetchAndParseQrData(),
+              //   // function: _markAttendance,
+              // ),
               CustomButton(
                 text: "Participant Details",
                 color: Colors.red.shade200,
