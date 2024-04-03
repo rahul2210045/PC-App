@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:pc_app/constants/constants.dart';
@@ -9,6 +10,8 @@ import 'package:pc_app/main.dart';
 import 'package:pc_app/views/screens/homeScreen/home_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+
+import '../../../services/storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +21,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final secureStorage = SecureStorage();
   TextEditingController _userController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
@@ -67,6 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           _isLoading = false;
         });
+        await secureStorage.writeSecureData('accessToken', accessToken);
+        await secureStorage.writeSecureData('refreshToken', refreshToken);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (_) => const HomeScreen()));
       } else {

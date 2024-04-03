@@ -4,7 +4,6 @@ import 'package:pc_app/components/custom_action_CheckBox.dart';
 import 'package:pc_app/components/custom_button.dart';
 import 'package:pc_app/main.dart';
 import 'package:pc_app/views/screens/qrScaning.dart';
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -18,6 +17,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 import '../../../models/student_details_model.dart';
+import '../../../services/storage.dart';
+import '../auth/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = false;
   String qrResult = '';
   String _actionValue = '';
-
+  final secureStorage = SecureStorage();
   //..............Api Intigration for TakeAction Api ...........................
 
   Future<void> _markAttendance() async {
@@ -317,7 +318,12 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("Programming Club"),
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
+          IconButton(onPressed: () async {
+            await secureStorage.deleteSecureData("accessToken");
+            await secureStorage.deleteSecureData("refreshToken");
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+          }, icon: Icon(Icons.more_vert))
         ],
         backgroundColor: Colors.red.shade100,
         elevation: 1,
