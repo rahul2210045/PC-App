@@ -20,8 +20,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _userController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-  bool obsVal = true;
   bool _isLoading = false;
+  bool _obscureText = true;
 
 // ........function to intigrate login api .....................
   Future<void> _saveItem() async {
@@ -98,7 +98,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget build(BuildContext context) {
-    bool obsVal = true;
     mq = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -171,17 +170,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     TextField(
                       controller: _passwordController,
-                      obscureText: obsVal,
+                      obscureText: _obscureText,
                       decoration: InputDecoration(
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.remove_red_eye_outlined),
-                          color: Colors.grey.shade500,
-                          onPressed: () {
-                            print(_passwordController.text);
+                        suffixIcon: GestureDetector(
+                          onTap: (){
                             setState(() {
-                              obsVal = !obsVal;
-                            });
+                              _obscureText= !_obscureText;
+                            }
+                            );
                           },
+                          child: Icon(_obscureText ? Icons.visibility_off : Icons.visibility,
+                            color: Colors.grey,
+                          ),
                         ),
                         hintText: "Password",
                         hintStyle: GoogleFonts.dmSans(

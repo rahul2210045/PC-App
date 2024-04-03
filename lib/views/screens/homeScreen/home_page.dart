@@ -27,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late StudentData studentData;
+  StudentData studentData = StudentData(studentId: "", studentName: "", isPaid: false, isContestOnly: false, day1Attendance: false, day2Attendance: false, contestAttendance: false);
   int _selectedCheckboxIndex = -1;
   bool _isLoading = false;
   String qrResult = '';
@@ -61,6 +61,18 @@ class _HomeScreenState extends State<HomeScreen> {
       print(response.statusCode);
       if (response.statusCode == 200) {
         print('Response body: ${response.body}');
+        if(_actionValue == "pay") {
+          studentData.isPaid = true;
+        }
+        else if(_actionValue == "mark_day1") {
+          studentData.day1Attendance = true;
+        }
+        else if(_actionValue == "mark_day2") {
+          studentData.day2Attendance = true;
+        }
+        else if(_actionValue == "mark_contest") {
+          studentData.contestAttendance = true;
+        }
         final Map<String, dynamic> responseData = json.decode(response.body);
         final message = responseData['message'];
         ScaffoldMessenger.of(context).showSnackBar(
@@ -334,6 +346,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (newValue) {
                       _selectedCheckboxIndex = 0;
                       _actionValue = 'pay';
+                      // setState(() {
+                      //
+                      // });
                     } else {
                       _selectedCheckboxIndex = -1;
                       _actionValue = '';

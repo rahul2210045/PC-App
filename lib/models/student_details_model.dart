@@ -1,11 +1,11 @@
 class StudentData {
   final String studentId;
   final String studentName;
-  final bool isPaid;
+  bool isPaid;
   final bool isContestOnly;
-  final bool day1Attendance;
-  final bool day2Attendance;
-  final bool contestAttendance;
+  bool day1Attendance;
+  bool day2Attendance;
+  bool contestAttendance;
 
   StudentData({
     required this.studentId,
