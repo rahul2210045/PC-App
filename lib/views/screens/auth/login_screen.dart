@@ -7,37 +7,51 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:pc_app/constants/constants.dart';
 import 'package:pc_app/main.dart';
+import 'package:pc_app/services/db.dart';
 import 'package:pc_app/views/screens/homeScreen/home_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../../../services/storage.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late Database db;
   final secureStorage = SecureStorage();
   TextEditingController _userController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscureText = true;
 
-// ........function to intigrate login api .....................
+  @override
+  void initState() {
+    super.initState();
+    initDatabase().then((value) {
+      setState(() {
+        db = value;
+      });
+    });
+  }
+
   Future<void> _saveItem() async {
     setState(() {
       _isLoading = true;
     });
 
+    String dID = await fetchDeviceId(db);
     final url = Uri.https('pc.anaskhan.site', '/api/login');
 
     final Map<String, String> requestBody = {
       'password': _passwordController.text,
       'username': _userController.text,
+      'unique_code': dID,
     };
 
     try {
